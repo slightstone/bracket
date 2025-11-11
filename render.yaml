@@ -1,20 +1,20 @@
-# Render Blueprint: Deploy backend (FastAPI) + frontend (Next.js) + Postgres in one click
-# Docs: https://render.com/docs/blueprint-spec
+# Render Blueprint: deploy Bracket backend (FastAPI) + frontend (Next.js) + Postgres
+# Place this file at the root of your repo as render.yaml
 
 databases:
   - name: bracket-postgres
-    plan: free
+    plan: free           # Use the free 256 MB/1 GB Postgres tier
 
 services:
   # Backend: FastAPI (Docker)
   - type: web
     name: bracket-backend
-    runtime: docker
+    env: docker          # Tells Render to build via Dockerfile
     dockerfilePath: backend/Dockerfile
-    autoDeployTrigger: commit
+    autoDeploy: true
+    plan: free           # Use the free 512 MB/0.1 CPU plan
     region: oregon
     healthCheckPath: /ping
-    # Environment variables for backend
     envVars:
       - key: ENVIRONMENT
         value: PRODUCTION
@@ -22,43 +22,37 @@ services:
         fromDatabase:
           name: bracket-postgres
           property: connectionString
-      - key: JWT_SECRET
+      - key: JWT_SECRET   # generate a random secret on each deploy
         generateValue: true
-      - key: ADMIN_EMAIL
-        sync: false
+      - key: ADMIN_EMAIL  # initial admin account for first login
+        value: admin@bnsports
       - key: ADMIN_PASSWORD
-        sync: false
-      # Base URL of backend (used by config.base_url)
+        value: Auv3oH3v_5kD2QmF7wE9pVwY8tZs
+      # Expose the frontend’s URL as the base URL and CORS origin for the API
       - key: BASE_URL
         fromService:
-          type: web
-          name: bracket-backend
-          envVarKey: RENDER_EXTERNAL_URL
-      # Allow CORS from the frontend's external URL
+          name: bracket-frontend
+          property: baseUrl
       - key: CORS_ORIGINS
         fromService:
-          type: web
           name: bracket-frontend
-          envVarKey: RENDER_EXTERNAL_URL
+          property: baseUrl
 
-  # Frontend: Next.js static site (Next export)
+  # Frontend: Next.js static export
   - type: web
-    runtime: static
     name: bracket-frontend
-    plan: free
-    rootDir: frontend
+    env: static          # Static site: built, then served from a CDN
+    rootDir: frontend    # Tell Render to run commands from the frontend dir
     buildCommand: |
-      npm ci
-      npm run build
-      npm run export
-    staticPublishPath: ./frontend/out
-    # Inject backend URL into the frontend at build-time
+      yarn install --frozen-lockfile
+      yarn export        # Next.js “export” produces a static site in out/
+    staticPublishPath: out
+    autoDeploy: true
+    plan: free
+    region: oregon
     envVars:
+      # Provide the API base URL to the frontend so it can call the backend
       - key: NEXT_PUBLIC_API_BASE_URL
         fromService:
-          type: web
           name: bracket-backend
-          envVarKey: RENDER_EXTERNAL_URL
-      # Optional analytics/hcaptcha in case needed
-      - key: NEXT_PUBLIC_HCAPTCHA_SITE_KEY
-        value: 10000000-ffff-ffff-ffff-000000000001
+          property: baseUrl
