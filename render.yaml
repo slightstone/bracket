@@ -28,15 +28,13 @@ services:
         value: admin@bnsports
       - key: ADMIN_PASSWORD
         value: Auv3oH3v_5kD2QmF7wE9pVwY8tZs
-      # Expose the frontend’s URL as the base URL and CORS origin for the API
+      # Expose the frontend URL as the base URL and CORS origin for the API
+      # Render's blueprint supports only host/port properties, not full base URLs.
+      # Static site URL follows the pattern https://&lt;service-name&gt;.onrender.com
       - key: BASE_URL
-        fromService:
-          name: bracket-frontend
-          property: baseUrl
+        value: https://bracket-frontend.onrender.com
       - key: CORS_ORIGINS
-        fromService:
-          name: bracket-frontend
-          property: baseUrl
+        value: https://bracket-frontend.onrender.com
 
   # Frontend: Next.js static export
   - type: web
@@ -49,9 +47,9 @@ services:
     staticPublishPath: out
     autoDeploy: true
     plan: free
-    region: oregon
     envVars:
       # Provide the API base URL to the frontend so it can call the backend
+      - key:ackend
       - key: NEXT_PUBLIC_API_BASE_URL
         fromService:
           name: bracket-backend
