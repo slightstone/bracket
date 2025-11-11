@@ -3,13 +3,13 @@ databases:
     plan: free
 
 services:
-  # Backend service
+  # Backend: FastAPI via Docker
   - type: web
     name: bracket-backend
     env: docker
     dockerfilePath: backend/Dockerfile
     autoDeploy: true
-    plan: starter    # Render’s $7/month starter plan
+    plan: starter      # This is the paid Starter plan ($7/month) you approved
     healthCheckPath: /ping
     envVars:
       - key: ENVIRONMENT
@@ -24,25 +24,22 @@ services:
         value: admin@bnsports
       - key: ADMIN_PASSWORD
         value: Auv3oH3v_5kD2QmF7wE9pVwY8tZs
-      - key: BASE_URL
-        fromService:
-          type: web
-          name: bracket-backend
-          property: hostport
       - key: CORS_ORIGINS
         fromService:
           type: web
           name: bracket-frontend
           property: hostport
 
-  # Frontend service (static site)
-  - type: static
+  # Frontend: Next.js static export served by Render as a static site
+  - type: web
     name: bracket-frontend
+    env: static           # This is the key change — marks the service as a static site
     rootDir: frontend
     buildCommand: |
       npm ci
       npm run export
-    publishPath: frontend/out
+    staticPublishPath: frontend/out
+    plan: free            # Static sites remain on the free tier
     envVars:
       - key: NEXT_PUBLIC_API_BASE_URL
         fromService:
