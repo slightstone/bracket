@@ -1,0 +1,61 @@
+# Render Blueprint: Deploy backend (FastAPI) + frontend (Next.js) + Postgres in one click
+# Docs: https://render.com/docs/blueprint-spec
+
+databases:
+  - name: bracket-postgres
+    plan: free
+
+services:
+  # Backend: FastAPI (Docker)
+  - type: web
+    name: bracket-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    autoDeploy: true
+    region: oregon
+    healthCheckPath: /ping
+    # Environment variables for backend
+    envVars:
+      - key: ENVIRONMENT
+        value: PRODUCTION
+      - key: PG_DSN
+        fromDatabase:
+          name: bracket-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@bnsports
+      - key: ADMIN_PASSWORD
+        value: Auv3oH3v_5kD2QmF7wE9pVwY8tZs
+      # Base URL of backend (used by config.base_url)
+      - key: BASE_URL
+        fromService:
+          type: web
+          name: bracket-backend
+          envVarKey: RENDER_EXTERNAL_URL
+      # Allow CORS from the frontend's external URL
+      - key: CORS_ORIGINS
+        fromService:
+          type: static
+          name: bracket-frontend
+          envVarKey: RENDER_EXTERNAL_URL
+
+  # Frontend: Next.js static site (Next export)
+  - type: static
+    name: bracket-frontend
+    rootDir: frontend
+    buildCommand: |
+      npm ci
+      npm run export
+    publishPath: frontend/out
+    # Inject backend URL into the frontend at build-time
+    envVars:
+      - key: NEXT_PUBLIC_API_BASE_URL
+        fromService:
+          type: web
+          name: bracket-backend
+          envVarKey: RENDER_EXTERNAL_URL
+      # Optional analytics/hcaptcha in case needed
+      - key: NEXT_PUBLIC_HCAPTCHA_SITE_KEY
+        value: 10000000-ffff-ffff-ffff-000000000001

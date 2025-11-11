@@ -111,6 +111,33 @@ Read the [deployment docs](https://docs.bracketapp.nl/docs/deployment) for how t
 
 Bracket can be run in Docker or by itself (using `pipenv` and `yarn`).
 
+## One-click deploy (Render)
+This repository includes a `render.yaml` blueprint to deploy the full stack (FastAPI backend, Next.js frontend, and a managed PostgreSQL database) on [Render](https://render.com) for free.
+
+Steps:
+1. Push your fork to GitHub (public or private).
+2. Create a free account at Render and choose “New +” → “Blueprint”.
+3. Paste your fork’s repository URL. Render will detect `render.yaml` and create:
+   - A free Postgres database (`bracket-postgres`)
+   - A backend service (`bracket-backend`) using the Dockerfile in `backend/`
+   - A frontend static site (`bracket-frontend`) built from `frontend/`
+4. Click “Apply”. First build and deploy may take a few minutes.
+5. After deploy:
+   - Backend will be available at a URL like `https://bracket-backend-<hash>.onrender.com`
+   - Frontend will be available at a URL like `https://bracket-frontend-<hash>.onrender.com`
+
+Notes:
+- The backend will auto-initialize a database and create the admin user if it’s empty.
+- CORS is automatically configured to allow the deployed frontend to call the backend.
+- The frontend is built using `npm run export` which outputs a static site that performs client-side requests to the backend API.
+
+## Admin login
+After deployment, log in via the frontend using:
+- Email: `admin@bnsports`
+- Password: `Auv3oH3v_5kD2QmF7wE9pVwY8tZs`
+
+You can change these by updating the environment variables in Render (`ADMIN_EMAIL`, `ADMIN_PASSWORD`).
+
 # Development setup
 Read the [development docs](https://docs.bracketapp.nl/docs/community/development) for how to run Bracket for development.
 
