@@ -37,18 +37,19 @@ services:
       # Allow CORS from the frontend's external URL
       - key: CORS_ORIGINS
         fromService:
-          type: static
+          type: web
           name: bracket-frontend
           envVarKey: RENDER_EXTERNAL_URL
 
   # Frontend: Next.js static site (Next export)
-  - type: static
+  - type: web
+    runtime: static
     name: bracket-frontend
     rootDir: frontend
     buildCommand: |
       npm ci
       npm run export
-    publishPath: frontend/out
+    staticPublishPath: ./frontend/out
     # Inject backend URL into the frontend at build-time
     envVars:
       - key: NEXT_PUBLIC_API_BASE_URL
