@@ -28,11 +28,11 @@ services:
         value: admin@bnsports
       - key: ADMIN_PASSWORD
         value: Auv3oH3v_5kD2QmF7wE9pVwY8tZs
-      # Expose the frontend URL as the base URL and CORS origin for the API
+      # Expose the backend URL as the base URL for SSO and the frontend as the CORS origin
       # Render's blueprint supports only host/port properties, not full base URLs.
       # Static site URL follows the pattern https://&lt;service-name&gt;.onrender.com
       - key: BASE_URL
-        value: https://bracket-frontend.onrender.com
+        value: https://bracket-backend.onrender.com
       - key: CORS_ORIGINS
         value: https://bracket-frontend.onrender.com
 
@@ -49,8 +49,5 @@ services:
     plan: free
     envVars:
       # Provide the API base URL to the frontend so it can call the backend
-      - key: backend
       - key: NEXT_PUBLIC_API_BASE_URL
-        fromService:
-          name: bracket-backend
-          property: baseUrl
+        value: https://bracket-backend.onrender.com
