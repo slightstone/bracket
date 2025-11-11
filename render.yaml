@@ -9,9 +9,9 @@ services:
   # Backend: FastAPI (Docker)
   - type: web
     name: bracket-backend
-    env: docker
+    runtime: docker
     dockerfilePath: backend/Dockerfile
-    autoDeploy: true
+    autoDeployTrigger: commit
     region: oregon
     healthCheckPath: /ping
     # Environment variables for backend
@@ -25,9 +25,9 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: ADMIN_EMAIL
-        value: admin@bnsports
+        sync: false
       - key: ADMIN_PASSWORD
-        value: Auv3oH3v_5kD2QmF7wE9pVwY8tZs
+        sync: false
       # Base URL of backend (used by config.base_url)
       - key: BASE_URL
         fromService:
