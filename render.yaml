@@ -1,16 +1,15 @@
-# Render Blueprint: deploy Bracket backend (FastAPI) + frontend (Next.js) + Postgres
-
 databases:
   - name: bracket-postgres
     plan: free
 
 services:
+  # Backend service
   - type: web
     name: bracket-backend
     env: docker
     dockerfilePath: backend/Dockerfile
     autoDeploy: true
-    plan: starter
+    plan: starter    # Render’s $7/month starter plan
     healthCheckPath: /ping
     envVars:
       - key: ENVIRONMENT
@@ -32,10 +31,11 @@ services:
           property: hostport
       - key: CORS_ORIGINS
         fromService:
-          type: static
+          type: web
           name: bracket-frontend
           property: hostport
 
+  # Frontend service (static site)
   - type: static
     name: bracket-frontend
     rootDir: frontend
