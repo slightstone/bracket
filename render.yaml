@@ -12,7 +12,7 @@ services:
     env: docker          # Tells Render to build via Dockerfile
     dockerfilePath: backend/Dockerfile
     autoDeploy: true
-    plan: free           # Use the free 512 MB/0.1 CPU plan
+    plan: starter        # Starter plan for web services
     region: oregon
     healthCheckPath: /ping
     envVars:
@@ -46,7 +46,6 @@ services:
       yarn export        # Next.js “export” produces a static site in out/
     staticPublishPath: out
     autoDeploy: true
-    plan: free
     envVars:
       # Provide the API base URL to the frontend so it can call the backend
       - key: NEXT_PUBLIC_API_BASE_URL
