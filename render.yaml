@@ -12,9 +12,7 @@ services:
     env: docker
     dockerfilePath: backend/Dockerfile
     autoDeploy: true
-    region: oregon
     healthCheckPath: /ping
-    # Environment variables for backend
     envVars:
       - key: ENVIRONMENT
         value: PRODUCTION
@@ -34,28 +32,23 @@ services:
           type: web
           name: bracket-backend
           envVarKey: RENDER_EXTERNAL_URL
-      # Allow CORS from the frontend's external URL
+      # Allow all origins (frontend calls backend). You can tighten later.
       - key: CORS_ORIGINS
-        fromService:
-          type: static
-          name: bracket-frontend
-          envVarKey: RENDER_EXTERNAL_URL
+        value: "*"
 
   # Frontend: Next.js static site (Next export)
   - type: static
     name: bracket-frontend
     rootDir: frontend
     buildCommand: |
-      npm ci
-      npm run export
+      yarn install --frozen-lockfile
+      yarn export
     publishPath: frontend/out
-    # Inject backend URL into the frontend at build-time
     envVars:
       - key: NEXT_PUBLIC_API_BASE_URL
         fromService:
           type: web
           name: bracket-backend
           envVarKey: RENDER_EXTERNAL_URL
-      # Optional analytics/hcaptcha in case needed
       - key: NEXT_PUBLIC_HCAPTCHA_SITE_KEY
         value: 10000000-ffff-ffff-ffff-000000000001
