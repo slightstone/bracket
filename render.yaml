@@ -1,19 +1,16 @@
 # Render Blueprint: deploy Bracket backend (FastAPI) + frontend (Next.js) + Postgres
-# Place this file at the root of your repo as render.yaml
 
 databases:
   - name: bracket-postgres
-    plan: free           # Use the free 256 MB/1 GB Postgres tier
+    plan: free
 
 services:
-  # Backend: FastAPI (Docker)
   - type: web
     name: bracket-backend
-    env: docker          # Tells Render to build via Dockerfile
+    env: docker
     dockerfilePath: backend/Dockerfile
     autoDeploy: true
-    plan: starter        # Starter plan for web services
-    region: oregon
+    plan: starter
     healthCheckPath: /ping
     envVars:
       - key: ENVIRONMENT
@@ -22,31 +19,35 @@ services:
         fromDatabase:
           name: bracket-postgres
           property: connectionString
-      - key: JWT_SECRET   # generate a random secret on each deploy
+      - key: JWT_SECRET
         generateValue: true
-      - key: ADMIN_EMAIL  # initial admin account for first login
+      - key: ADMIN_EMAIL
         value: admin@bnsports
       - key: ADMIN_PASSWORD
         value: Auv3oH3v_5kD2QmF7wE9pVwY8tZs
-      # Expose the backend URL as the base URL for SSO and the frontend as the CORS origin
-      # Render's blueprint supports only host/port properties, not full base URLs.
-      # Static site URL follows the pattern https://&lt;service-name&gt;.onrender.com
       - key: BASE_URL
-        value: https://bracket-backend.onrender.com
+        fromService:
+          type: web
+          name: bracket-backend
+          property: hostport
       - key: CORS_ORIGINS
-        value: https://bracket-frontend.onrender.com
+        fromService:
+          type: static
+          name: bracket-frontend
+          property: hostport
 
-  # Frontend: Next.js static export
-  - type: web
+  - type: static
     name: bracket-frontend
-    env: static          # Static site: built, then served from a CDN
-    rootDir: frontend    # Tell Render to run commands from the frontend dir
+    rootDir: frontend
     buildCommand: |
-      yarn install --frozen-lockfile
-      yarn export        # Next.js “export” produces a static site in out/
-    staticPublishPath: out
-    autoDeploy: true
+      npm ci
+      npm run export
+    publishPath: frontend/out
     envVars:
-      # Provide the API base URL to the frontend so it can call the backend
       - key: NEXT_PUBLIC_API_BASE_URL
-        value: https://bracket-backend.onrender.com
+        fromService:
+          type: web
+          name: bracket-backend
+          property: hostport
+      - key: NEXT_PUBLIC_HCAPTCHA_SITE_KEY
+        value: 10000000-ffff-ffff-ffff-000000000001
