@@ -45,9 +45,11 @@ services:
   - type: web
     runtime: static
     name: bracket-frontend
+    plan: free
     rootDir: frontend
     buildCommand: |
       npm ci
+      npm run build
       npm run export
     staticPublishPath: ./frontend/out
     # Inject backend URL into the frontend at build-time
@@ -58,5 +60,4 @@ services:
           name: bracket-backend
           envVarKey: RENDER_EXTERNAL_URL
       # Optional analytics/hcaptcha in case needed
-      - key: NEXT_PUBLIC_HCAPTCHA_SITE_KEY
-        value: 10000000-ffff-ffff-ffff-000000000001
+      - key:    value: 10000000-ffff-ffff-ffff-000000000001
