@@ -30,21 +30,20 @@ services:
           name: bracket-frontend
           property: hostport
 
-  # Frontend: Next.js static export served by Render as a static site
-  - type: web
-    name: bracket-frontend
-    env: static           # This is the key change — marks the service as a static site
-    rootDir: frontend
-    buildCommand: |
-      npm ci
-      npm run export
-    staticPublishPath: frontend/out
-    plan: free            # Static sites remain on the free tier
-    envVars:
-      - key: NEXT_PUBLIC_API_BASE_URL
-        fromService:
-          type: web
-          name: bracket-backend
-          property: hostport
-      - key: NEXT_PUBLIC_HCAPTCHA_SITE_KEY
-        value: 10000000-ffff-ffff-ffff-000000000001
+    # Frontend: Next.js static export served by Render as a static site
+    - type: web
+      name: bracket-frontend
+      env: static
+      rootDir: frontend
+      buildCommand: |
+        npm ci
+        npm run export
+      staticPublishPath: frontend/out
+      envVars:
+        - key: NEXT_PUBLIC_API_BASE_URL
+          fromService:
+            type: web
+            name: bracket-backend
+            property: hostport
+        - key: NEXT_PUBLIC_HCAPTCHA_SITE_KEY
+          value: 10000000-ffff-ffff-ffff-000000000001
