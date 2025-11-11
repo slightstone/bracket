@@ -60,4 +60,5 @@ services:
           name: bracket-backend
           envVarKey: RENDER_EXTERNAL_URL
       # Optional analytics/hcaptcha in case needed
-      - key:    value: 10000000-ffff-ffff-ffff-000000000001
+      - key: NEXT_PUBLIC_HCAPTCHA_SITE_KEY
+        value: 10000000-ffff-ffff-ffff-000000000001
