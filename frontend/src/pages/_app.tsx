@@ -7,6 +7,7 @@ import '@mantine/notifications/styles.css';
 import '@mantine/spotlight/styles.css';
 import { appWithTranslation } from 'next-i18next';
 import Head from 'next/head';
+import nextI18NextConfig from '../../next-i18next.config';
 
 import { BracketSpotlight } from '../components/modals/spotlight';
 
@@ -63,4 +64,4 @@ const App = ({ Component, pageProps }: any) => (
   </>
 );
 
-export default appWithTranslation(App);
+export default appWithTranslation(App, nextI18NextConfig);

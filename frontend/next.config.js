@@ -1,6 +1,7 @@
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
+const { i18n } = require('./next-i18next.config');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -16,6 +17,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+
+  // Ensure Next provides locale to pages and middleware
+  i18n,
 };
 
 module.exports = withBundleAnalyzer(nextConfig);
