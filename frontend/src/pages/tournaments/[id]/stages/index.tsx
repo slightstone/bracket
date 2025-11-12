@@ -85,8 +85,8 @@ export default function StagesPage() {
   return <TournamentLayout tournament_id={tournamentData.id}>{content}</TournamentLayout>;
 }
 
-export const getServerSideProps = async ({ locale }: { locale: string }) => ({
+export const getServerSideProps = async ({ locale }: { locale?: string }) => ({
   props: {
-    ...(await serverSideTranslations(locale, ['common'])),
+    ...(await serverSideTranslations(locale ?? 'en', ['common'])),
   },
 });
