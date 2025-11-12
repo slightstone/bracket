@@ -36,7 +36,7 @@ services:
     env: node
     rootDir: frontend
     buildCommand: yarn install --network-timeout 1000000 && yarn build
-    startCommand: yarn start
+    startCommand: node .next/standalone/server.js
     autoDeploy: true
     plan: starter
     envVars:
