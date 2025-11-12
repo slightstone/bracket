@@ -4,16 +4,15 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ✅ Enables static export for Render
-  output: 'export',
+  // SSR build for Render Web Service
+  output: 'standalone',
 
-  // ✅ Keep strict mode and linting setup
   reactStrictMode: false,
   eslint: {
     ignoreDuringBuilds: true,
   },
 
-  // ✅ Required for static image support
+  // Disable Next.js image optimization to avoid optional sharp install issues on some environments
   images: {
     unoptimized: true,
   },

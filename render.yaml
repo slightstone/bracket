@@ -9,7 +9,7 @@ services:
     env: docker
     dockerfilePath: backend/Dockerfile
     autoDeploy: true
-    plan: starter      # This is the paid Starter plan ($7/month) you approved
+    plan: starter
     healthCheckPath: /ping
     envVars:
       - key: ENVIRONMENT
@@ -30,20 +30,17 @@ services:
           name: bracket-frontend
           property: hostport
 
-    # Frontend: Next.js static export served by Render as a static site
-    - type: web
-      name: bracket-frontend
-      env: static
-      rootDir: frontend
-      buildCommand: |
-        npm ci
-        npm run export
-      staticPublishPath: frontend/out
-      envVars:
-        - key: NEXT_PUBLIC_API_BASE_URL
-          fromService:
-            type: web
-            name: bracket-backend
-            property: hostport
-        - key: NEXT_PUBLIC_HCAPTCHA_SITE_KEY
-          value: 10000000-ffff-ffff-ffff-000000000001
+  # Frontend: Next.js SSR served by Render as a Node web service
+  - type: web
+    name: bracket-frontend
+    env: node
+    rootDir: frontend
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    startCommand: npm start
+    autoDeploy: true
+    plan: starter
+    envVars:
+      - key: NEXT_PUBLIC_API_BASE_URL
+        value: https://bracket-backend-latest.onrender.com
+      - key: NEXT_PUBLIC_HCAPTCHA_SITE_KEY
+        value: 10000000-ffff-ffff-ffff-000000000001
