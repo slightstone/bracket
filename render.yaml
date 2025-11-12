@@ -35,8 +35,8 @@ services:
     name: bracket-frontend
     env: node
     rootDir: frontend
-    buildCommand: npm install --legacy-peer-deps && npm run build
-    startCommand: npm start
+    buildCommand: yarn install --network-timeout 1000000 && yarn build
+    startCommand: yarn start
     autoDeploy: true
     plan: starter
     envVars:
